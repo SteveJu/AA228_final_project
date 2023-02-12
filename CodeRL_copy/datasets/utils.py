@@ -8,7 +8,7 @@
 import io
 
 
-from CodeRL_copy.datasets.reindent import run as run_reindent
+from datasets.reindent import run as run_reindent
 
 def reindent_code(codestr):
     """
