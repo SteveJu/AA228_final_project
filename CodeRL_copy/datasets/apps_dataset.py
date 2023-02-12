@@ -6,22 +6,18 @@
 #
 
 import torch
-import glob
-import logging
 import random
-import fnmatch
 import numpy as np
 import gc
 import os
 from tqdm import tqdm 
 from collections import Counter
 import pickle as pkl 
-import json, pdb 
+import json, pdb
 
-from multiprocessing import Manager
 import transformers
 
-import datasets.utils as dsutils
+import CodeRL_copy.datasets.utils as dsutils
 
 class APPSBaseDataset(torch.utils.data.Dataset):
     def __init__(self, dataroot, problem_dirs, model, max_tokens, sample_mode, 
