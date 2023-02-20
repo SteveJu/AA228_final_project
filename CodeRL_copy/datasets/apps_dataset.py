@@ -17,7 +17,7 @@ import json, pdb
 
 import transformers
 
-import CodeRL_copy.datasets.utils as dsutils
+import datasets.utils as dsutils
 
 class APPSBaseDataset(torch.utils.data.Dataset):
     def __init__(self, dataroot, problem_dirs, model, max_tokens, sample_mode, 
