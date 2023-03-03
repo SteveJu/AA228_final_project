@@ -7,11 +7,11 @@
 ## '''##
 code_path=outputs/codes/
 output_path=outputs/test_results/
-test_path=/export/home/apps/data/APPS/test/ 
+test_path=data/APPS_test_example_tests/
 
 example_tests=0 # 0: run hidden unit tests; 1: run example unit tests 
 start=0
-end=1
+end=1000
 threads=10
 
 if [ ! -d $output_path ] 

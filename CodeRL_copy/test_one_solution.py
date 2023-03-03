@@ -8,65 +8,67 @@
 import json
 import numpy as np
 import os
-import os.path 
+import os.path
 import pprint
-import glob 
+import glob
 from tqdm import tqdm
 import pdb
-import traceback 
-import pickle as pkl 
+import traceback
+import pickle as pkl
 from typing import List
-
+import re
 from utils.testing_util import run_test
 
-def eval_and_save_problems(args):
 
-    problems = sorted(glob.glob(args.test_path + '/*'))
-    test_indices = [] 
-    for problem_idx, problem in enumerate(problems): 
-        problem_id = int(problem.split('/')[-1])
-        code_file_path = args.code_path + '/{}.json'.format(problem_id)
+def eval_and_save_problems(args):
+    problems = sorted(glob.glob(args.test_path + '*'))
+    new_problems = problems[:1000]
+    problems = []
+    for i in new_problems:
+        new_i = re.split('/|\\\\', i)
+        new_i = '/'.join(new_i)
+        problems.append(new_i)
+    test_indices = []
+    for problem_idx, problem in enumerate(problems):
+        problem = re.split('/|\\\\', problem)
+        problem_id = int(problem[-1])
+        code_file_path = args.code_path + '{}.json'.format(problem_id)
         if os.path.exists(code_file_path):
             test_indices.append(problem_idx)
-    
-    real_index = test_indices[args.index] 
+    real_index = test_indices[args.index]
     problem = problems[real_index]
-    
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
-    
+
     print('Testing sample {}'.format(problem))
-    
+
     if args.example_tests:
-        print("Using example tests") 
-    
-    codes_loc = args.code_path + '/{}.json'.format(real_index)
+        print("Using example tests")
+    codes_loc = args.code_path + '{}.json'.format(real_index)
     if not os.path.isfile(codes_loc):
-        exit() 
-    with open(codes_loc, "r") as file: 
+        exit()
+    with open(codes_loc, "r") as file:
         gen_codes = json.load(file)[str(real_index)]['code']
 
-    test_file = os.path.join(problem, "input_output.json")
+    test_file = problem + "/example_input_output.json"
     tests = json.load(open(test_file, 'r'))
     nb_tests = len(tests['inputs'])
-    if args.max_tests!=-1 and nb_tests > args.max_tests: 
-        exit() 
-
-    if os.path.isfile(args.output_path + '/{}.pkl'.format(real_index)):
+    if args.max_tests != -1 and nb_tests > args.max_tests:
         exit()
-        
-    print("Saving to {}".format(args.output_path + '/{}.pkl'.format(real_index)))
+
+    #if os.path.isfile(args.output_path + '{}.pkl'.format(real_index)):
+    #    exit()
+
+    print("Saving to {}".format(args.output_path + '{}.pkl'.format(real_index)))
 
     all_results, all_errors, all_sols = [], [], []
-
     for o_idx, o in tqdm(enumerate(gen_codes), total=len(gen_codes), ncols=0, leave=False):
-
         curr_results = []
         curr_errors = []
         curr_sol = None
         try:
-            curr_results, curr_errors, _, curr_sol = run_test(prob_path=problem, test=o, debug=args.debug, 
-                                          example_tests=args.example_tests)
+            curr_results, curr_errors, _, curr_sol = run_test(prob_path=problem, test=o,
+                                                              example_tests=args.example_tests)
 
             curr_errors = [(e, traceback.format_tb(e.__traceback__)) if e is not None else e for e in curr_errors]
             fixed = []
@@ -87,9 +89,9 @@ def eval_and_save_problems(args):
             all_errors.append(curr_errors)
             all_sols.append(curr_sol)
 
-        save_results = {real_index : {'results': all_results, 'errors': all_errors, 'sols': all_sols}} 
-        with open(args.output_path + '/{}.pkl'.format(real_index), "wb") as file:
-            pkl.dump(save_results, file)  
+        save_results = {real_index: {'results': all_results, 'errors': all_errors, 'sols': all_sols}}
+        with open(args.output_path + '{}.pkl'.format(real_index), "wb") as file:
+            pkl.dump(save_results, file)
 
     '''
     How to read results:
@@ -99,13 +101,15 @@ def eval_and_save_problems(args):
     [True] = passed test case
     '''
 
-    save_results = {real_index : {'results': all_results, 'errors': all_errors, 'sols': all_sols}} 
-    pkl.dump(save_results,  open(args.output_path + '/{}.pkl'.format(real_index), "wb"))                    
+    save_results = {real_index: {'results': all_results, 'errors': all_errors, 'sols': all_sols}}
+    pkl.dump(save_results, open(args.output_path + '/{}.pkl'.format(real_index), "wb"))
 
-def main(args):    
-    argsdict = vars(args)    
+def main(args):
+    argsdict = vars(args)
     eval_and_save_problems(args)
 
+
 if __name__ == "__main__":
-    from configs.unit_test_configs import * 
+    from configs.unit_test_configs import *
+
     main(args)
