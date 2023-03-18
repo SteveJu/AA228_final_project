@@ -77,7 +77,7 @@ class APPSBaseDataset(torch.utils.data.Dataset):
         return samples 
     
     def get_gt_info(self):
-        return (1, None)
+        return ((1, 10), None)
 
     def get_baseline_error_type(self, sols): 
         return dsutils.get_error_type((sols[0]['result'], sols[0]['linter']))
