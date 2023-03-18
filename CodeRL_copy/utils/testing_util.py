@@ -264,9 +264,10 @@ def run_test(prob_path:str=None, problem_list:List[str]=None, prob_index:int=Non
         if debug:
             print(f"get method = {datetime.now().time()}")
 
-        #try:
-        method = getattr(tmp, method_name)  # get_attr second arg must be str
-        #except:
+        try:
+            method = getattr(tmp, method_name)  # get_attr second arg must be str
+        except:
+            method = None
         if False:
             signal.alarm(0)
             e = sys.exc_info()
