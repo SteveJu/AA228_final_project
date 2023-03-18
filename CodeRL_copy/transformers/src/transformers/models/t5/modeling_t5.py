@@ -1469,7 +1469,7 @@ class T5ForConditionalGeneration(T5PreTrainedModel):
             self.error_head = nn.Sequential(
                   nn.Linear(config.d_model, 128),
                   nn.ReLU(),
-                  nn.Linear(128, 4)
+                  nn.Linear(128, 6)
             )
             
         elif self.tuning_mode in ['rl'] and self.clone_rl_head: 

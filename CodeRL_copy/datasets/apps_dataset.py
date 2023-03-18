@@ -49,7 +49,7 @@ class APPSBaseDataset(torch.utils.data.Dataset):
             sample = (question_str, starter_code, sol_str, answer_type)
             samples.append(sample) 
             
-            result = sol['result']
+            result = (sol['result'], sol['linter'])
             error_type = sol['error_type']
             
             info.append((result, error_type))
@@ -80,7 +80,7 @@ class APPSBaseDataset(torch.utils.data.Dataset):
         return (1, None)
 
     def get_baseline_error_type(self, sols): 
-        return dsutils.get_error_type(sols[0]['result'])
+        return dsutils.get_error_type((sols[0]['result'], sols[0]['linter']))
     
     def update_error_stat(self, info):
         for i in info:
